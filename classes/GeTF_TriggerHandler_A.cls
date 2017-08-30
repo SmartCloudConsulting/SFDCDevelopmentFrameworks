@@ -14,9 +14,9 @@ History
 VERSION      AUTHOR                DATE             DETAIL             Description
    1.0    	Mark Cook 		    01/02/2017      
 ***********************************************************************/   
- 
- public abstract class GeTF_TriggerHandler_A implements GeTF_Trigger_I {
- 	public static Boolean recurseFlag = false;
+public abstract class GeTF_TriggerHandler_A implements GeTF_Trigger_I {
+    public static Boolean recurseFlag = false;
+    protected Boolean hasRecordsToProcess = false;
 
 // <<TO DO>> STRIP  OUT REDUNDANT CODE (AS BELOW)
     /* list of operations to be completed by the dispatcher */
@@ -39,7 +39,7 @@ VERSION      AUTHOR                DATE             DETAIL             Descripti
       * logic to by applied.  This has no parameters.
       * Constructors need be overriden to pass params.
       * */
-  	protected abstract void filterRecords();
+    protected abstract void filterRecords();
          
      /* this method should be used to do the logic 
       * for every class. 
@@ -54,7 +54,8 @@ VERSION      AUTHOR                DATE             DETAIL             Descripti
 
       if(recordsToProcessMap.isEmpty() 
           && recordsToProcessList.isEmpty() 
-          && recordIdsToProcessList.isEmpty()){
+          && recordIdsToProcessList.isEmpty()
+          && !hasRecordsToProcess){
         recordsToProcess = false;
       }
       return recordsToProcess;
