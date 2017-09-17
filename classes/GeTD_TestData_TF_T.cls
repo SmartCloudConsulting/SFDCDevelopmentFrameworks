@@ -69,7 +69,7 @@ public class GeTD_TestData_TF_T {
 	public List<Account> createTestAccounts(Id recordTypeId, Integer numberOfAccounts){
 		List<Account> accountsToReturn = createTestAccounts(numberOfAccounts);
 		for(Account anAccount : accountsToReturn){
-			anAccount.recordTypeId = recordTypeId;
+//			anAccount.recordTypeId = recordTypeId;
 		}
 		return accountsToReturn;	
 	}	
@@ -82,9 +82,9 @@ public class GeTD_TestData_TF_T {
     public List<Account> createTestAccounts(String recordTypeName, Integer numberOfAccounts){
         List<Account> accountsToReturn = createTestAccounts(numberOfAccounts);
         for(Account anAccount : accountsToReturn){
-            anAccount.recordTypeId 
-                    = Ge_CommonUtility_U.getSObjectRecordTypeId(  Account.sObjectType
-                                                                , recordTypeName);
+  //          anAccount.recordTypeId 
+  //                  = Ge_CommonUtility_U.getSObjectRecordTypeId(  Account.sObjectType
+  //                                                              , recordTypeName);
         }
         return accountsToReturn;    
     }
@@ -186,10 +186,9 @@ public class GeTD_TestData_TF_T {
                 opp.Name = 'Test Opportunity '+ rand;
                 opp.AccountId = accounts.get(i).Id;
                 opp.Amount = 1000;
-                opp.LocalAmount__c = 1000;
                 opp.StageName = stage;
                 opp.CloseDate = System.today() + 30;
-                opp.RecordTypeId = recordTypeId;    
+//                opp.RecordTypeId = recordTypeId;    
                 opp.Type = type;
 
                 opps.add(opp);
@@ -230,7 +229,7 @@ public class GeTD_TestData_TF_T {
                                                                         , recordTypeDevName);
 
         aNewCase.AccountId = accountId;
-        aNewCase.RecordTypeId = recordTypeId;
+//        aNewCase.RecordTypeId = recordTypeId;
 
         return aNewCase;
     }
@@ -266,32 +265,11 @@ public class GeTD_TestData_TF_T {
                                                                         , recordTypeDevName);
         Integer rand = Math.round(Math.random()*1000);
         aNewTask.WhatId = whatId;
-        aNewTask.RecordTypeId = recordTypeId;
+//        aNewTask.RecordTypeId = recordTypeId;
         aNewTask.ActivityDate = Date.valueOf(System.now());
         aNewTask.Subject = 'A Test Subject ' + rand;
 
         return aNewTask;
-    }
-
-/********************************* CREATE A PRICEBOOK ENTRY RECORD s*********************************/
-
-    /*******************************************************************
-    * @description Create some Products, Price Prooks and then entries 
-                   related the 2 (PricebookEntry)                
-    * @return List<PricebookEntry> - relating a number of Products and Pricebooks
-    * @Throws [Exceptions]: NONE                                                 
-    ********************************************************************/
-     public List<PricebookEntry> createNewPriceBookEntries(){
-        //This uses the original test data helper
-        TestDataHelper testDataHelperOld = new TestDataHelper();
-        List<Product2> products = testDataHelperOld.createProducts();
-        insert products;
-        List<Pricebook2> priceBooks = testDataHelperOld.createPricebook2s(5);
-        insert priceBooks;
-        List<PricebookEntry> priceBookEntry = testDataHelperOld.createPricebookEntries(products);
-        insert priceBookEntry;
-
-        return priceBookEntry;
     }
 
 /********************************* CREATE AN CAMPAIGN RECORD *********************************/
@@ -325,7 +303,7 @@ public class GeTD_TestData_TF_T {
             if(aRecord.Id != null){
                 CampaignMember aCampMember = new CampaignMember();
                 aCampMember.CampaignId = campaignID;
-                aCampMember.ContactId = aRecord.Id;
+//                aCampMember.ContactId = aRecord.Id;
                 newCampaignMemebers.add(aCampMember);
             }
         }
