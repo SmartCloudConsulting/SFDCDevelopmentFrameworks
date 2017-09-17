@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Follow</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Used to capture Exceptions within the System</description>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <fields>
+        <fullName>ClassSource__c</fullName>
+        <description>The class / method / Script in which the exception was thrown</description>
+        <encrypted>false</encrypted>
+        <externalId>false</externalId>
+        <label>Class Source</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Custom_Exception_Message__c</fullName>
+        <description>Custom Exception Message that was used by the class</description>
+        <encrypted>false</encrypted>
+        <externalId>false</externalId>
+        <label>Custom Exception Message</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Exception_Message__c</fullName>
+        <description>The message which is seen by the user</description>
+        <encrypted>false</encrypted>
+        <externalId>false</externalId>
+        <label>Exception Message</label>
+        <length>10000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>10</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Exception_Type__c</fullName>
+        <description>The type of exception that has been thrown (e.g. DMLException, MathException, etc.)</description>
+        <encrypted>false</encrypted>
+        <externalId>false</externalId>
+        <label>Exception Type</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Line_Number__c</fullName>
+        <description>The line number in the class where the exception was thrown</description>
+        <encrypted>false</encrypted>
+        <externalId>false</externalId>
+        <label>Line Number</label>
+        <length>10</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Manual_Intervention_Required__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Used to determine if a Manual Intervention Object should be created</description>
+        <externalId>false</externalId>
+        <label>Manual Intervention Required</label>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Record_ID__c</fullName>
+        <description>The Id of the record that caused the issue if known / was not being processed as part of a list</description>
+        <encrypted>false</encrypted>
+        <externalId>false</externalId>
+        <label>Record ID</label>
+        <length>18</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Related_Process__c</fullName>
+        <description>The Process related to the Exception</description>
+        <encrypted>false</encrypted>
+        <externalId>false</externalId>
+        <label>Related Process</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Request_Body__c</fullName>
+        <description>The body of the web service request which caused the exception</description>
+        <encrypted>false</encrypted>
+        <externalId>false</externalId>
+        <label>Request Body</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Response_Body__c</fullName>
+        <description>The response returned in the web service which caused the exception</description>
+        <encrypted>false</encrypted>
+        <externalId>false</externalId>
+        <label>Response Body</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>StackTrace__c</fullName>
+        <description>The stack trace of the exception</description>
+        <encrypted>false</encrypted>
+        <externalId>false</externalId>
+        <label>Stack Trace</label>
+        <length>10000</length>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Status_Code__c</fullName>
+        <description>The status code returned (if the exception was caused by a web service)</description>
+        <encrypted>false</encrypted>
+        <externalId>false</externalId>
+        <label>Status Code</label>
+        <length>3</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>System_of_origin__c</fullName>
+        <defaultValue>&quot;Salesforce&quot;</defaultValue>
+        <description>Used to determine the system of origin</description>
+        <externalId>false</externalId>
+        <label>System of origin</label>
+        <picklist>
+            <picklistValues>
+                <fullName>Salesforce</fullName>
+                <default>false</default>
+            </picklistValues>
+            <restrictedPicklist>true</restrictedPicklist>
+            <sorted>false</sorted>
+        </picklist>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Web_Service_Method__c</fullName>
+        <description>The web service method which was used when the exception occurred (e.g. GET, POST, PUT, PATCH</description>
+        <encrypted>false</encrypted>
+        <externalId>false</externalId>
+        <label>Web Service Method</label>
+        <length>20</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <label>Exception</label>
+    <listViews>
+        <fullName>All</fullName>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <nameField>
+        <displayFormat>Exp-{000000}</displayFormat>
+        <label>Exception Name</label>
+        <trackHistory>false</trackHistory>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Exceptions</pluralLabel>
+    <recordTypeTrackHistory>false</recordTypeTrackHistory>
+    <recordTypes>
+        <fullName>General</fullName>
+        <active>true</active>
+        <description>Used for General Exceptions</description>
+        <label>General</label>
+        <picklistValues>
+            <picklist>System_of_origin__c</picklist>
+            <values>
+                <fullName>Automation Anywhere</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Salesforce</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <recordTypes>
+        <fullName>Web_Service</fullName>
+        <active>true</active>
+        <description>Used for Web Service Specific Exceptions</description>
+        <label>Web Service</label>
+        <picklistValues>
+            <picklist>System_of_origin__c</picklist>
+            <values>
+                <fullName>Automation Anywhere</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Salesforce</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+</CustomObject>
