@@ -4,6 +4,7 @@
         <members>GeDA_sObject_DAO</members>
         <members>GeDa_sObject_DAO_T</members>
         <members>Ge_Account_DAO</members>
+        <members>GeDa_sObject_DAO_T</members>
         <members>GeDA_Activities_DAO</members>
         <members>GeEF_Exception</members>
         <members>GeEF_ExceptionHandler_A</members>
