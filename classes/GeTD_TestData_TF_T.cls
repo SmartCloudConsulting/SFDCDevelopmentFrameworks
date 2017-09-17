@@ -98,22 +98,6 @@ public class GeTD_TestData_TF_T {
 	}
 
     /*******************************************************************
-    * @description Create a new Account with a defined Account Name
-    * @Param - String accName - name for the test account                  
-    ********************************************************************/
-	public Account createNewAccount(String accName){
-		Account aNewAccount = new Account(Name=accName);
-        aNewAccount.AccountStatus__c = 'Active';
-        aNewAccount.KYC_DescriptionOfClientClientsBusiness__c = 'Yes';
-        aNewAccount.KYC_IdentifiedBeneficialOwners__c = 'Yes';
-        aNewAccount.KYC_SourceOfWealthToInvest__c = 'Yes';
-        aNewAccount.KYC_SuitabilityToInvest__c = returnRandomPicklistValue(aNewAccount,'KYC_SuitabilityToInvest__c');
-        aNewAccount.KYC_JurisdictionOfInvestingEntity__c
-                                        = returnRandomPicklistValue(aNewAccount,'KYC_JurisdictionOfInvestingEntity__c');
-		return aNewAccount;
-	}
-
-    /*******************************************************************
     * @description Create a list of Test Accounts with a given RecordType
     *              insert the accounts and then returns the quried values(POST TRIGGERS AND WORKFLOWS)
     * @Param - recordTypeName RecordType name of the record
@@ -213,92 +197,7 @@ public class GeTD_TestData_TF_T {
         return opps;
     }
 
-/********************************* CREATE AN Conferences_and_Events__c RECORD *********************************/
 
-    /*******************************************************************
-    * @description Create a given Conference or Event
-    * @param - Id researchProvider - The Salesforce ID of the Account research provider
-    * @param - Integer recordsToReturn - number of records to return
-    * @param - String recordTypeId - Record Type Dev Name you wish to be created
-    ********************************************************************/
-    public List<Conferences_and_Events__c> createConferenceAndEvent ( Id researchProvider
-                                                                    , Integer recordsToReturn
-                                                                    , String recordTypeDevName){
-        return createConferenceAndEvent( researchProvider
-                                        , recordsToReturn
-                                        , recordTypeDevName
-                                        , null);
-    }
-
-    /*******************************************************************
-    * @description Create a given Conference or Event
-    * @param - Id researchProvider - The Salesforce ID of the Account research provider
-    * @param - Integer recordsToReturn - number of records to return
-    * @param - String recordTypeId - Record Type Dev Name you wish to be created
-    * @param - String aGivenType - The Type of the Conference
-    ********************************************************************/
-    public List<Conferences_and_Events__c> createConferenceAndEvent ( Id researchProvider
-                                                                    , Integer recordsToReturn
-                                                                    , String recordTypeDevName
-                                                                    , String aGivenType){
-        List<Conferences_and_Events__c> confAndEvents = new List<Conferences_and_Events__c>(); 
-
-        String recordType = Ge_CommonUtility_U.getSObjectRecordTypeId(  Conferences_and_Events__c.sObjectType
-                                                                        , recordTypeDevName);
-
-        for (Integer i = 0; i < recordsToReturn; i++) {
-            Integer rand = Math.round(Math.random()*1000);
-            Conferences_and_Events__c conf = new Conferences_and_Events__c();
-            conf.Name = 'Test Conference '+ rand;
-            conf.Research_Provider__c = researchProvider;
-            conf.Start_Date__c = Date.valueOf(System.now());
-            conf.End_Date__c = Date.valueOf(System.now());
-            conf.Notes__c = 'These are some test notes';
-            conf.Location__c = 'Somewhere';
-            conf.RecordTypeId = recordType;   
-            if(aGivenType == null){
-                conf.Type__c = 'Road Show';
-            } else {
-                conf.Type__c = aGivenType;
-            }
-            confAndEvents.add(conf);
-        }
-            
-        return confAndEvents;
-    }
-
-/********************************* CREATE AN Associated_Conference__c RECORD *********************************/
-
-    /*******************************************************************
-    * @description Creates the relationship between and account and conference
-                    but uses a map to create the relationships where 
-                    AccountId > ConferenceId 
-    * @param - Map<String,String> mapAccountIdAndConfId Map of AccountId > ConferenceId 
-    ********************************************************************/
-    public List<Associated_Conference__c> createListOfAssoicatedAccountAndConf (Map<String,String> mapAccountIdAndConfId){
-        List<Associated_Conference__c>  listOfAssociatedConf = new List<Associated_Conference__c> ();
-
-        for(String confID : mapAccountIdAndConfId.keySet()){
-            listOfAssociatedConf.add(createAccountConfAssociation(confID,mapAccountIdAndConfId.get(confID)));
-        }
-        return listOfAssociatedConf;
-    }
-
-    /*******************************************************************
-    * @description Creats the relationship between a conference and Account
-    * @param - String accountId - Account ID that will be used to link
-    * @param - String conferenceId - conference ID that will be used in link
-    ********************************************************************/
-    public Associated_Conference__c createAccountConfAssociation (String accountId, String conferenceId){
-        Associated_Conference__c assConf = new Associated_Conference__c();
-        String recordType = Ge_CommonUtility_U.getSObjectRecordTypeId(  Associated_Conference__c.sObjectType
-                                                                        , 'Associated_Company');
-        assConf.RecordTypeId = recordType;
-        assConf.Confernece_or_Event__c = conferenceId;
-        assConf.Target_Company__c = accountId;
-
-        return assConf;
-    }
 
 
 /********************************* CREATE AN CASE RECORD *********************************/
