@@ -29,10 +29,6 @@
         <name>ApexTrigger</name>
     </types>
     <types>
-        <members>Salesforce</members>
-        <name>ConnectedApp</name>
-    </types>
-    <types>
         <members>GeEF_Exception_Logging__c</members>
         <members>GeEL_Exception__c</members>
         <members>GeWS_Security_Credential__c</members>
