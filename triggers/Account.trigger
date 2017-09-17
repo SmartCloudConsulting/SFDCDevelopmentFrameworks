@@ -24,7 +24,7 @@ trigger Account on Account (before insert,
     if (Trigger.isAfter) {
 	    if (Trigger.isUpdate) {
 	    	//Update the Record type on Contacts relating to an Account
-	        dispatcher.addOperation(new Ge_ContactSharing_TH(Trigger.newMap, Trigger.oldMap));
+//	        dispatcher.addOperation(new Example_TH(Trigger.newMap, Trigger.oldMap));
 	    }
     }
 
