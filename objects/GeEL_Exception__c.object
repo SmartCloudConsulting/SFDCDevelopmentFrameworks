@@ -259,10 +259,6 @@
         <picklistValues>
             <picklist>System_of_origin__c</picklist>
             <values>
-                <fullName>Automation Anywhere</fullName>
-                <default>false</default>
-            </values>
-            <values>
                 <fullName>Salesforce</fullName>
                 <default>false</default>
             </values>
@@ -275,10 +271,6 @@
         <label>Web Service</label>
         <picklistValues>
             <picklist>System_of_origin__c</picklist>
-            <values>
-                <fullName>Automation Anywhere</fullName>
-                <default>false</default>
-            </values>
             <values>
                 <fullName>Salesforce</fullName>
                 <default>false</default>
