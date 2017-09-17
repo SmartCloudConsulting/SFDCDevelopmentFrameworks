@@ -82,11 +82,6 @@
     </classAccesses>
     <custom>false</custom>
     <fieldPermissions>
-        <editable>true</editable>
-        <field>GeEL_Exception__c.Associated_Team__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
         <editable>false</editable>
         <field>GeEL_Exception__c.ClassSource__c</field>
         <readable>false</readable>
