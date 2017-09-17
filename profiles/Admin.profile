@@ -226,10 +226,6 @@
     </layoutAssignments>
     <layoutAssignments>
         <layout>GeEL_Exception__c-General</layout>
-        <recordType>GeEL_Exception__c.Automation_Anywhere</recordType>
-    </layoutAssignments>
-    <layoutAssignments>
-        <layout>GeEL_Exception__c-General</layout>
         <recordType>GeEL_Exception__c.General</recordType>
     </layoutAssignments>
     <layoutAssignments>
@@ -257,11 +253,6 @@
         <object>GeWS_Security_Credential__c</object>
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
-    <recordTypeVisibilities>
-        <default>true</default>
-        <recordType>GeEL_Exception__c.Automation_Anywhere</recordType>
-        <visible>true</visible>
-    </recordTypeVisibilities>
     <recordTypeVisibilities>
         <default>false</default>
         <recordType>GeEL_Exception__c.General</recordType>
