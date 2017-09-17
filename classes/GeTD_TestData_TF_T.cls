@@ -293,7 +293,7 @@ public class GeTD_TestData_TF_T {
                                                                         , recordTypeDevName);
         Integer rand = Math.round(Math.random()*1000);
 
-        aNewCampaign.RecordTypeId = recordTypeId;
+//        aNewCampaign.RecordTypeId = recordTypeId;
         aNewCampaign.Name = 'This is a Test Campaign ' + rand;
 
         return aNewCampaign;
