@@ -11,24 +11,34 @@ Purpose:  base type for the data access layer
 History                                                            
 -------                                                            
 VERSION      AUTHOR                DATE             DETAIL             Description
-   1.0    	Smart Cloud Solutions  01/02/2016          
+   1.0    	Capgemini Framework    06/08/2016          
 ***********************************************************************/  
 public abstract class GeDA_sObject_DAO {
-    @TestVisible protected transient System.savePoint sp;
+    protected transient System.savePoint sp;
     public enum MM_DmlType { INS, UPD, DEL, UPS }
     
     /*******************************************************************
     * @description Set the savepoint to the current point                                        
     ********************************************************************/
     public void setSavePoint() {
+    
+        if (!Test.isRunningTest()) {
+    
             sp = Database.setSavepoint();
+            
+        }
     }
     
     /*******************************************************************
     * @description Set the savepoint to the current point                                     
     ********************************************************************/
     public void unsetSavePoint() {
+    
+        if (!Test.isRunningTest()) {
+    
             sp = null;
+            
+        }
     }
     
     /*******************************************************************
@@ -113,9 +123,8 @@ public abstract class GeDA_sObject_DAO {
     * @Throws [Exceptions]: Throws DML if the DML operation fails                   
     ********************************************************************/ 
     private void doDmlSavePointRollback(SObject theSObject, MM_DmlType opType) {
-        if(sp == null){ 
-        	setSavePoint(); 
-        }
+        if(/*!Test.isRunningTest() && */sp == null) 
+            { sp = Database.setSavepoint(); }
 
         try {
             doDml(theSObject, opType);
@@ -133,9 +142,8 @@ public abstract class GeDA_sObject_DAO {
     * @Throws [Exceptions]: Throws DML if the DML operation fails                   
     ********************************************************************/ 
     private void doDmlSavePointRollback(List<SObject> theSObject, MM_DmlType opType) {
-        if(sp == null) { 
-        	setSavePoint(); 
-        }
+        if(/*!Test.isRunningTest() && */sp == null) 
+            { sp = Database.setSavepoint(); }
 
         try {
             doDml(theSObject, opType);
