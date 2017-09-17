@@ -98,6 +98,15 @@ public class GeTD_TestData_TF_T {
 	}
 
     /*******************************************************************
+    * @description Create a new Account with a defined Account Name
+    * @Param - String accName - name for the test account                  
+    ********************************************************************/
+    public Account createNewAccount(String accName){
+        Account aNewAccount = new Account(Name=accName);
+        return aNewAccount;
+    }
+
+    /*******************************************************************
     * @description Create a list of Test Accounts with a given RecordType
     *              insert the accounts and then returns the quried values(POST TRIGGERS AND WORKFLOWS)
     * @Param - recordTypeName RecordType name of the record
