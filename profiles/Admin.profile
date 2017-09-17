@@ -254,7 +254,7 @@
         <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <recordTypeVisibilities>
-        <default>false</default>
+        <default>true</default>
         <recordType>GeEL_Exception__c.General</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
