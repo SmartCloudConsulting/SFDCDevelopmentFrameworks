@@ -59,7 +59,6 @@
     <fields>
         <fullName>ClassSource__c</fullName>
         <description>The class / method / Script in which the exception was thrown</description>
-        <encrypted>false</encrypted>
         <externalId>false</externalId>
         <label>Class Source</label>
         <length>255</length>
@@ -72,7 +71,6 @@
     <fields>
         <fullName>Custom_Exception_Message__c</fullName>
         <description>Custom Exception Message that was used by the class</description>
-        <encrypted>false</encrypted>
         <externalId>false</externalId>
         <label>Custom Exception Message</label>
         <length>255</length>
@@ -85,7 +83,6 @@
     <fields>
         <fullName>Exception_Message__c</fullName>
         <description>The message which is seen by the user</description>
-        <encrypted>false</encrypted>
         <externalId>false</externalId>
         <label>Exception Message</label>
         <length>10000</length>
@@ -97,7 +94,6 @@
     <fields>
         <fullName>Exception_Type__c</fullName>
         <description>The type of exception that has been thrown (e.g. DMLException, MathException, etc.)</description>
-        <encrypted>false</encrypted>
         <externalId>false</externalId>
         <label>Exception Type</label>
         <length>255</length>
@@ -110,7 +106,6 @@
     <fields>
         <fullName>Line_Number__c</fullName>
         <description>The line number in the class where the exception was thrown</description>
-        <encrypted>false</encrypted>
         <externalId>false</externalId>
         <label>Line Number</label>
         <length>10</length>
@@ -133,7 +128,6 @@
     <fields>
         <fullName>Record_ID__c</fullName>
         <description>The Id of the record that caused the issue if known / was not being processed as part of a list</description>
-        <encrypted>false</encrypted>
         <externalId>false</externalId>
         <label>Record ID</label>
         <length>18</length>
@@ -146,7 +140,6 @@
     <fields>
         <fullName>Related_Process__c</fullName>
         <description>The Process related to the Exception</description>
-        <encrypted>false</encrypted>
         <externalId>false</externalId>
         <label>Related Process</label>
         <length>255</length>
@@ -159,7 +152,6 @@
     <fields>
         <fullName>Request_Body__c</fullName>
         <description>The body of the web service request which caused the exception</description>
-        <encrypted>false</encrypted>
         <externalId>false</externalId>
         <label>Request Body</label>
         <length>32768</length>
@@ -171,7 +163,6 @@
     <fields>
         <fullName>Response_Body__c</fullName>
         <description>The response returned in the web service which caused the exception</description>
-        <encrypted>false</encrypted>
         <externalId>false</externalId>
         <label>Response Body</label>
         <length>32768</length>
@@ -183,7 +174,6 @@
     <fields>
         <fullName>StackTrace__c</fullName>
         <description>The stack trace of the exception</description>
-        <encrypted>false</encrypted>
         <externalId>false</externalId>
         <label>Stack Trace</label>
         <length>10000</length>
@@ -195,7 +185,6 @@
     <fields>
         <fullName>Status_Code__c</fullName>
         <description>The status code returned (if the exception was caused by a web service)</description>
-        <encrypted>false</encrypted>
         <externalId>false</externalId>
         <label>Status Code</label>
         <length>3</length>
@@ -227,7 +216,6 @@
     <fields>
         <fullName>Web_Service_Method__c</fullName>
         <description>The web service method which was used when the exception occurred (e.g. GET, POST, PUT, PATCH</description>
-        <encrypted>false</encrypted>
         <externalId>false</externalId>
         <label>Web Service Method</label>
         <length>20</length>
