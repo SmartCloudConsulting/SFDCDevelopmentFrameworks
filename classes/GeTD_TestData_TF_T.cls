@@ -319,4 +319,90 @@ public class GeTD_TestData_TF_T {
 
         return newCampaignMemebers;
     }
+
+/********************************* CREATE INTEGRATION CUSTOM SETTING RECORD *********************************/
+
+    /*******************************************************************
+    * @description Creates a generic Website Integration Setting
+    ********************************************************************/
+    public GeWS_WebService_Integration_Settings__c newWSIntegrationSetting(){
+        Integer rand = Math.round(Math.random()*1000);
+        return newWSIntegrationSetting('https://test.salesforce.com', '', 'Test - ' + rand);
+    }
+
+    /*******************************************************************
+    * @description Creates a generic Website Integration Setting
+    * @param - String theName - The Identifier for the setting
+    ********************************************************************/
+    public GeWS_WebService_Integration_Settings__c newWSIntegrationSetting(String theName){
+        return newWSIntegrationSetting('https://test.salesforce.com', '', theName);
+    }
+
+    /*******************************************************************
+    * @description Creates a new basic Campaign Record
+    * @param - String endPoint -The endpoint to use in the custom Setting
+    * @param - String credID - unique identifier for the credenital to use
+    * @param - String theName - The Identifier for the setting
+    ********************************************************************/
+    public GeWS_WebService_Integration_Settings__c newWSIntegrationSetting(String endPoint
+                                                                         , String credID
+                                                                         , String theName){
+        GeWS_WebService_Integration_Settings__c newSetting = new GeWS_WebService_Integration_Settings__c();
+        
+        newSetting.Name = theName;
+        newSetting.GeWS_Endpoint__c = endPoint;
+        newSetting.GeWS_IntegrationCredentialIdentifier__c = credID;
+        newSetting.GeWS_Timeout__c = 500;
+        newSetting.GeWS_User_Agent__c = 'Application';
+
+        return newSetting;
+    }
+    
+/********************************* CREATE INTEGRATION CUSTOM SETTING RECORD *********************************/
+   
+    /*******************************************************************
+    * @description Creates a sec cred for oAuth2
+    * @param - String endPoint -The endpoint to use in the custom Setting
+    ********************************************************************/
+    public GeWS_Security_Credential__c newoAuth2SecurityCredential(String credIdentifier){
+        String endPoint = 'https://test.salesforce.com';
+        return newoAuth2SecurityCredential(endPoint, credIdentifier);
+    }
+
+    /*******************************************************************
+    * @description Creates a sec cred for oAuth2
+    * @param - String endPoint -The endpoint to use in the custom Setting
+    * @param - String credIdentifier - unique identifier for the credenital to use
+    ********************************************************************/
+    public GeWS_Security_Credential__c newoAuth2SecurityCredential(   String endPoint
+                                                                    , String credIdentifier){
+        GeWS_Security_Credential__c secCred = new GeWS_Security_Credential__c();
+        Integer rand = Math.round(Math.random()*1000);
+        secCred.GeWS_API_Key__c = 'ThisIsASampleKey' + rand;
+        secCred.GeWS_API_Secret__c = '1234ThisIsASecret' + rand;
+        secCred.GeWS_Authentication_Endpoint__c = endPoint;
+        secCred.GeWS_Credential_Identifier__c = credIdentifier;
+        secCred.GeWS_Credential_Type__c = GeWS_Constants.WS_OAUTH_2;
+        secCred.GeWS_Grant_Type__c = GeWS_Constants.HTTP_GRANT_TYPE_PASSWORD;
+        secCred.GeWS_Password__c = 'ThisIsAPassword';
+        secCred.GeWS_User_Agent__c = 'Application';
+        secCred.GeWS_Username__c = 'sample@user.com';
+        secCred.GeWS_API_Key_Location__c = '';
+        secCred.GeWS_API_key_Variable_to_use__c = '';
+        secCred.Name = credIdentifier;
+
+        return secCred;
+    }
+
+    
+/********************************* CREATE EXCEPTION LOGGING CUSTOM SETTING RECORD *********************************/
+
+    /*******************************************************************
+    * @description Creates Exception logging custom setting
+    ********************************************************************/
+    public GeEF_Exception_Logging__c newExceptionLogging(){
+        GeEF_Exception_Logging__c newExceptLog = new GeEF_Exception_Logging__c(Create_Exceptions__c = true);
+
+        return newExceptLog;
+    }    
 }
