@@ -87,6 +87,7 @@ public abstract with sharing class GeWS_WebService_A {
     * @return String endpoint for the web-service call
     * @Throws [Exceptions]: None                                                 
     ********************************************************************/
+    @testvisible
     protected virtual String populateEndPoint(String url
                                             , Map<String, String> urlReplacements
                                             , Map<String, String> parameters) {
@@ -226,6 +227,7 @@ public abstract with sharing class GeWS_WebService_A {
                             , contentType
                             , requestBody
                             , retryIfBusy);
+System.debug('this is the results ' + results);
         return results;
     }
 
@@ -260,9 +262,13 @@ public abstract with sharing class GeWS_WebService_A {
 
         // The for loop is used to call again if the service is busy (returns a 429 error)
         for (Integer i = 0; i <= 1; i++) {
+System.debug(req.getBody());
+System.debug(req.getEndpoint());
+System.debug(req.getHeader(GeWS_Constants.WS_AUTHORIZATION_HEADER));
             // Make the callout and populate the response object
             response = sendRequest(req);  
-  
+System.debug('This is the Actual Response ' + response.getBody());
+System.debug('This is the response Status Code ' + response.getStatusCode());  
             // If no response was returned the return this to the calling method            
             if (response == null) {
                 return null;
@@ -302,7 +308,7 @@ public abstract with sharing class GeWS_WebService_A {
     * @param  String method - the HTTP Method that should be used
     * @param  HTTPRequest req - Request object to populate the method =
     * @Throws [Exceptions]: None
-    ********************************************************************/  
+    ********************************************************************/
     protected virtual Void setMethodForCallout(String method, HttpRequest req){
         //Populates the Method of the API request
         if (method == null || method == '') {
@@ -323,6 +329,7 @@ public abstract with sharing class GeWS_WebService_A {
     * @return HttpRequest - HTTP request object with request populated
     * @Throws [Exceptions]: <<TO DO>>
     ********************************************************************/ 
+    @testvisible
     protected virtual HttpRequest setHTTPRequestValues(   String method
                                                         , String endpoint
                                                         , String contentType) {
@@ -354,7 +361,8 @@ public abstract with sharing class GeWS_WebService_A {
     * @param  String bodyOfRequest - The body of the request to use
     * @return HttpRequest - HTTP request object with request populated
     * @Throws [Exceptions]: <<TO DO>>
-    ********************************************************************/   
+    ********************************************************************/
+    @testvisible
     protected virtual HttpRequest setHTTPRequestValues(   String method
                                                         , String endpoint
                                                         , String wS_IntegrationSettingName
@@ -426,6 +434,7 @@ public abstract with sharing class GeWS_WebService_A {
                 if(secCred.GeWS_Credential_Type__c.equals(GeWS_Constants.WS_OAUTH_2)){ 
                     return setOAuth2(request, secCred);
                 }
+
                 //Call Method to build Other Authentication
                 if(secCred.GeWS_Credential_Type__c.equals(GeWS_Constants.WS_API_KEY_ONLY)){ 
                     return setAPIKeyOnly(request, secCred);
@@ -499,10 +508,11 @@ public abstract with sharing class GeWS_WebService_A {
         HttpRequest accessRequest = setHTTPRequestValues(GeWS_Constants.WS_METHOD_POST
                                                         , oAuthEndPoint(credentials)
                                                         , GeWS_Constants.HTTP_CONTENT_TYPE_JSON);
-      
+
         HTTPResponse accessResponse = this.sendRequest(accessRequest);
         String responseBody = accessResponse.getBody();
-
+System.debug('This is the Auth Response ' + responseBody);
+System.debug('This is the response Status Code ' + accessResponse.getStatusCode());
         accessToken = String.valueOf(
                         ((Map<String, Object>) JSON.deserializeUntyped(responseBody))
                                 .get(GeWS_Constants.WS_OAUTH_ACCESS_TOKEN));
@@ -512,7 +522,9 @@ public abstract with sharing class GeWS_WebService_A {
         
         return request;
     }
-    
+
+
+
     /*******************************************************************
     * @description Sets Headers for APIKEY
     * @param  HttpRequest request - request object to set header auth
@@ -556,6 +568,10 @@ public abstract with sharing class GeWS_WebService_A {
 
         return oAuth2EndPoint;
     }
+
+
+
+
 
     /*******************************************************************
     * @description Sets oauth of Grant Type is Password
