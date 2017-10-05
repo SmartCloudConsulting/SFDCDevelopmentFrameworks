@@ -47,7 +47,8 @@ public with sharing class GeED_GeneralException_EH_T implements geTF_Test_I {
 
 		GeWS_Security_Credential__c newSecCred
 									= testF.newoAuth2SecurityCredential( 'http://authenticate.com'
-																		, credentialIdentifier);
+																		, credentialIdentifier
+																		, serviceEndPoint);
 		insert newSecCred;
 		testAcc = testF.createNewAccount();
 
@@ -66,7 +67,7 @@ public with sharing class GeED_GeneralException_EH_T implements geTF_Test_I {
 
     /*******************************************************************
     * @description checks that the exception Object to be inserted is created as expected         
-    ********************************************************************/ 
+    ********************************************************************/
     @isTest static void creationOfExceptionObjectToInsert() {
         testDataSetup();
 
@@ -97,7 +98,7 @@ public with sharing class GeED_GeneralException_EH_T implements geTF_Test_I {
 
     /*******************************************************************
     * @description checks that the throwing another exception works as expected            
-    ********************************************************************/ 
+    ********************************************************************/
     @isTest static void throwAnotherException() {
         testDataSetup();
 
@@ -129,7 +130,7 @@ public with sharing class GeED_GeneralException_EH_T implements geTF_Test_I {
     * @description Creates an exception record using the framework 
     * the framework will detect that we are in a test scenario and will not queue a job
     * instead it will insert a record. To check this the query must be between the Start and stop test
-    ********************************************************************/ 
+    ********************************************************************/
     @isTest static void creationExceptionUsingFramework() {
         testDataSetup();
 
@@ -171,7 +172,7 @@ public with sharing class GeED_GeneralException_EH_T implements geTF_Test_I {
     * @description Creates an exception record using the framework when the queable jobs limit is reached
     * the framework will detect that we are in a test scenario and will not queue a job
     * instead it will insert a record. To check this the query must be between the Start and stop test
-    ********************************************************************/ 
+    ********************************************************************/
     @isTest static void creationExceptionWhenQueableJobLimitReached() {
         testDataSetup();
 
@@ -188,8 +189,10 @@ public with sharing class GeED_GeneralException_EH_T implements geTF_Test_I {
 		        	atestRecord.Related_Process__c = relatedProcess;
 		        	atestRecord.Record_ID__c = 'anID';
 		        	atestRecord.Exception_Message__c = exceptionMessage;
-		        	atestRecord.Exception_Type__c = 'test';				
-					System.enqueueJob(new GeEF_ExceptionHandler_A.ExecuteExceptionCalloutLogic_Q(atestRecord 
+		        	atestRecord.Exception_Type__c = 'test';
+		        	List<GeEL_Exception__c> testExceptions = new List<GeEL_Exception__c>();	
+		        	testExceptions.add(atestRecord);
+					System.enqueueJob(new GeEF_ExceptionHandler_A.ExecuteExceptionCalloutLogic_Q(testExceptions 
 																								, 'sessionId')); 
 
 				
@@ -217,7 +220,7 @@ public with sharing class GeED_GeneralException_EH_T implements geTF_Test_I {
 
    /*******************************************************************
     * @description Creates an exception record using the A-sync process within the framework   
-    ********************************************************************/ 
+    ********************************************************************/
     @isTest static void creationExceptionUsingAsync() {
         testDataSetup();
 
@@ -227,9 +230,10 @@ public with sharing class GeED_GeneralException_EH_T implements geTF_Test_I {
         	atestRecord.Record_ID__c = 'anID';
         	atestRecord.Exception_Message__c = exceptionMessage;
         	atestRecord.Exception_Type__c = 'test';
-
+        	List<GeEL_Exception__c> testExceptions = new List<GeEL_Exception__c>();	
+        	testExceptions.add(atestRecord);
 	    	//queue a job that will insert the exception into the system
-			System.enqueueJob(new GeEF_ExceptionHandler_A.ExecuteExceptionCalloutLogic_Q(atestRecord 
+			System.enqueueJob(new GeEF_ExceptionHandler_A.ExecuteExceptionCalloutLogic_Q(testExceptions 
 																						, 'sessionId'));
 
         Test.stopTest();
@@ -247,4 +251,49 @@ public with sharing class GeED_GeneralException_EH_T implements geTF_Test_I {
         	System.assert(anException.Exception_Type__c.contains('test'));
         }
     }
+    
+   /*******************************************************************
+    * @description test a batch mode of creating exceptions
+    ********************************************************************/
+    @isTest static void creationExceptionUsingFrameworkInBatch() {
+        testDataSetup();
+
+        Test.startTest();
+        	//Turn on bulk processing mode
+        	GeEF_ExceptionHandler_A.isInBatchMode = TRUE;
+
+        	GeED_GeneralException_EH sample;
+	        //Create an exception
+	        try{
+	        	throw new GeEF_Exception(exceptionMessage);
+	    	} catch (Exception e){
+	    		for(Integer i = 0; i < 42; i++) {	
+		    		sample = new GeED_GeneralException_EH(theSource
+														, theErrorMessage
+														, e
+														, relatedProcess
+														, false
+														, 'anID');
+	    		}
+	    		
+	    	}
+	    	//Use the bulk option to create the exceptions at the end
+	    	GeEF_ExceptionHandler_A.createExceptionRecord();
+
+	        //test that the exception is created
+	        GeEF_Exception_DAO excptionDao = new GeEF_Exception_DAO();
+	        Map<Id, GeEL_Exception__c> someExceptions = excptionDao.getMapOfExceptions();
+
+	        System.assert(someExceptions != null);
+	        System.assert(someExceptions.values().size() == 42);
+	        //test the exception record created has the expcted values
+	        for(GeEL_Exception__c anException : someExceptions.values()){
+		    	System.assertEquals(anException.Related_Process__c, relatedProcess);
+	        	System.assertEquals(anException.Record_ID__c, 'anID');
+	        	System.assertEquals(anException.Exception_Message__c, exceptionMessage);
+	        	System.assert(anException.Exception_Type__c.contains('GeEF_Exception'));
+	        }
+        Test.stopTest();
+    }
+
 }

@@ -6,7 +6,6 @@
     <fields>
         <fullName>GeWS_Endpoint__c</fullName>
         <description>Ge - General, WS - WebService Framework,The URI which is called as part of the web-service request</description>
-        <encrypted>false</encrypted>
         <externalId>false</externalId>
         <label>Endpoint</label>
         <length>255</length>
@@ -18,7 +17,6 @@
     <fields>
         <fullName>GeWS_IntegrationCredentialIdentifier__c</fullName>
         <description>Ge - General, WS - WebService Framework, Stores the Integration Credential Identifier used to retrieve a record which stores Loggin details for this external System</description>
-        <encrypted>false</encrypted>
         <externalId>false</externalId>
         <label>Integration Credential Identifier</label>
         <length>255</length>
@@ -42,7 +40,6 @@
     <fields>
         <fullName>GeWS_User_Agent__c</fullName>
         <description>Ge - General, WS - WebService Framework,The time in milliseconds after which the web-service request times out</description>
-        <encrypted>false</encrypted>
         <externalId>false</externalId>
         <label>User Agent</label>
         <length>255</length>

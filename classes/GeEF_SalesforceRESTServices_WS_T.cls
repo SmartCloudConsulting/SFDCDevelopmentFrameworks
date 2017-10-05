@@ -17,6 +17,7 @@ VERSION      AUTHOR                DATE             DETAIL             Descripti
 @isTest
 public with sharing class GeEF_SalesforceRESTServices_WS_T implements geTF_Test_I {
 	private static Account testAcc;
+	private static List<Account> testAccounts;
 	private static String serviceEndPoint = 'https://testResource.com';
 	private static GeWS_Security_Credential__c secSetting;
 
@@ -43,9 +44,11 @@ public with sharing class GeEF_SalesforceRESTServices_WS_T implements geTF_Test_
 
 		GeWS_Security_Credential__c newSecCred
 									= testF.newoAuth2SecurityCredential( 'http://authenticate.com'
-																		, credentialIdentifier);
+																		, credentialIdentifier
+																		, serviceEndPoint);
 		insert newSecCred;
 		testAcc = testF.createNewAccount();
+		testAccounts = testF.createTestAccounts(40);
 
 	}
 
@@ -98,8 +101,84 @@ public with sharing class GeEF_SalesforceRESTServices_WS_T implements geTF_Test_
 			//Nothing should be returned, but an exception should be created
 			System.assertEquals(response, null);
 		Test.stopTest();
-//Check Exception is created? - if this is donve via WS call this might not be possible
 	}
+
+
+    /*******************************************************************
+    * @description tests the ability to create multiple records                         
+    ********************************************************************/ 
+	@isTest static void createMulitRecord() {
+		testDataSetup();
+
+		Test.setMock(HttpCalloutMock.class, new GeEF_SalesforceRESTServices_WS_T.MockHttpResponseGeneratorMulti());
+		Test.startTest();
+			//Create instance of WS and call to create a records
+			GeEF_SalesforceRESTServices_WS sfdcWsRest = new GeEF_SalesforceRESTServices_WS();
+			Boolean response = sfdcWsRest.createRecords(testAccounts);
+			//Check response is true
+			System.assert(response);
+
+		Test.stopTest();
+	}
+
+    /*******************************************************************
+    * @description tests the ability to create multiple records                         
+    ********************************************************************/ 
+	@isTest static void createMulitRecordSpecificEnv() {
+		testDataSetup();
+
+		Test.setMock(HttpCalloutMock.class, new GeEF_SalesforceRESTServices_WS_T.MockHttpResponseGeneratorMulti());
+		Test.startTest();
+			//Create instance of WS and call to create a records
+			GeEF_SalesforceRESTServices_WS sfdcWsRest = new GeEF_SalesforceRESTServices_WS();
+			Boolean response = sfdcWsRest.createRecords(testAccounts, GeWS_Constants.SALESFORCE_API);
+			//Check response is true
+			System.assert(response);
+
+		Test.stopTest();
+	}
+
+    /*******************************************************************
+    * @description tests the error scenario and the creation of an exception                     
+    ********************************************************************/ 
+	@isTest static void createMultiRecordError() {
+		testDataSetup();
+
+		Test.setMock(HttpCalloutMock.class, new GeEF_SalesforceRESTServices_WS_T.MockHttpResponseErrorGeneratorMulti());
+		Test.startTest();
+			//Create instance of WS and call to create a records
+			GeEF_SalesforceRESTServices_WS sfdcWsRest = new GeEF_SalesforceRESTServices_WS();
+			Boolean response = sfdcWsRest.createRecords(testAccounts);
+			//check the response is false
+			System.assert(!response);
+		Test.stopTest();
+	}
+
+    /*******************************************************************
+    * @description Error when attempting to creating records of a mixed type (accounts and contacts)                  
+    ********************************************************************/ 
+	@isTest static void createMultiRecordErrorDueToMixedReocrds() {
+		testDataSetup();
+		List<sObject> testRecords = new List<sObject>();
+		testRecords.add(testAcc);
+		testRecords.add(new Contact());
+
+		Test.setMock(HttpCalloutMock.class, new GeEF_SalesforceRESTServices_WS_T.MockHttpResponseErrorGeneratorMulti());
+		Test.startTest();
+			//Create instance of WS and call to create a records
+			GeEF_SalesforceRESTServices_WS sfdcWsRest = new GeEF_SalesforceRESTServices_WS();
+			Boolean response = sfdcWsRest.createRecords(testRecords);
+			//check the response is false
+			System.assert(!response);
+
+			//what happens if we pass a null list
+			response = sfdcWsRest.createRecords(null);
+			//check the response is false
+			System.assert(!response);
+
+		Test.stopTest();
+	}
+
 
 //<<TO DO>> Need to TEST FAILED AUTHENTICATE
 /********************************* Classes to Store Mock WS Call Responses *********************************/
@@ -142,7 +221,44 @@ public with sharing class GeEF_SalesforceRESTServices_WS_T implements geTF_Test_
         }
     }
 
+    /*******************************************************************
+    * @description generates a Successfull Auth call and a Successfull record Create                 
+    ********************************************************************/ 
+    public class MockHttpResponseGeneratorMulti implements HttpCalloutMock
+    {
+        public HTTPResponse respond(HTTPRequest req) 
+        {   
+            HttpResponse res = new HttpResponse();
+            res.setHeader(GeWS_Constants.CONTENT_TYPE, GeWS_Constants.HTTP_CONTENT_TYPE_JSON);
+            if(req.getEndpoint().contains('http://authenticate.com')){
+                res.setBody('{"access_token":"SESSION_ID_REMOVED","instance_url":"https://gimsf--Sprint9Dev.cs86.my.salesforce.com","id":"https://test.salesforce.com/id/00D7E0000008tG7UAI/00558000001jyAsAAI","token_type":"Bearer","issued_at":"1505415231637","signature":"ZMSkPPjzFxTBT13JIMOSLK6+mnVVN3snghF0qwM4sMs="}');
+            	res.setStatusCode(200);
+            } else {
+            	res.setBody('{"hasErrors":false,"results":[{"referenceId":"0","id":"0017E00000coRVyQAM"},{"referenceId":"1","id":"0017E00000coRVzQAM"},{"referenceId":"2","id":"0017E00000coRW0QAM"},{"referenceId":"3","id":"0017E00000coRW1QAM"},{"referenceId":"4","id":"0017E00000coRW2QAM"},{"referenceId":"5","id":"0017E00000coRW3QAM"},{"referenceId":"6","id":"0017E00000coRW4QAM"},{"referenceId":"7","id":"0017E00000coRW5QAM"},{"referenceId":"8","id":"0017E00000coRW6QAM"},{"referenceId":"9","id":"0017E00000coRW7QAM"},{"referenceId":"10","id":"0017E00000coRW8QAM"},{"referenceId":"11","id":"0017E00000coRW9QAM"},{"referenceId":"12","id":"0017E00000coRWAQA2"},{"referenceId":"13","id":"0017E00000coRWBQA2"},{"referenceId":"14","id":"0017E00000coRWCQA2"},{"referenceId":"15","id":"0017E00000coRWDQA2"},{"referenceId":"16","id":"0017E00000coRWEQA2"},{"referenceId":"17","id":"0017E00000coRWFQA2"},{"referenceId":"18","id":"0017E00000coRWGQA2"},{"referenceId":"19","id":"0017E00000coRWHQA2"},{"referenceId":"20","id":"0017E00000coRWIQA2"},{"referenceId":"21","id":"0017E00000coRWJQA2"},{"referenceId":"22","id":"0017E00000coRWKQA2"},{"referenceId":"23","id":"0017E00000coRWLQA2"},{"referenceId":"24","id":"0017E00000coRWMQA2"},{"referenceId":"25","id":"0017E00000coRWNQA2"},{"referenceId":"26","id":"0017E00000coRWOQA2"},{"referenceId":"27","id":"0017E00000coRWPQA2"},{"referenceId":"28","id":"0017E00000coRWQQA2"},{"referenceId":"29","id":"0017E00000coRWRQA2"},{"referenceId":"30","id":"0017E00000coRWSQA2"},{"referenceId":"31","id":"0017E00000coRWTQA2"},{"referenceId":"32","id":"0017E00000coRWUQA2"},{"referenceId":"33","id":"0017E00000coRWVQA2"},{"referenceId":"34","id":"0017E00000coRWWQA2"},{"referenceId":"35","id":"0017E00000coRWXQA2"},{"referenceId":"36","id":"0017E00000coRWYQA2"},{"referenceId":"37","id":"0017E00000coRWZQA2"},{"referenceId":"38","id":"0017E00000coRWaQAM"},{"referenceId":"39","id":"0017E00000coRWbQAM"}]}');
+            	res.setStatusCode(201);
+            }
+            return res;
+        }
+    }
 
+    /*******************************************************************
+    * @description generates a Successfull Auth call and a faied record Create                 
+    ********************************************************************/ 
+    public class MockHttpResponseErrorGeneratorMulti implements HttpCalloutMock {
+        public HTTPResponse respond(HTTPRequest req) 
+        {   
+            HttpResponse res = new HttpResponse();
+            res.setHeader(GeWS_Constants.CONTENT_TYPE, GeWS_Constants.HTTP_CONTENT_TYPE_JSON);
+            if(req.getEndpoint().contains('http://authenticate.com')){
+                res.setBody('{"access_token":"SESSION_ID_REMOVED","instance_url":"https://gimsf--Sprint9Dev.cs86.my.salesforce.com","id":"https://test.salesforce.com/id/00D7E0000008tG7UAI/00558000001jyAsAAI","token_type":"Bearer","issued_at":"1505415231637","signature":"ZMSkPPjzFxTBT13JIMOSLK6+mnVVN3snghF0qwM4sMs="}');
+            	res.setStatusCode(200);
+            } else {
+                res.setBody('[{"message":"Required fields are missing: [Name]","errorCode":"REQUIRED_FIELD_MISSING","fields":["Name"]}]');
+            	res.setStatusCode(400);
+            } 
+            return res;
+        }
+    }
 
 /******* Methods to test abstract Framworks - this is the first concrete class of the abstract framework ********/
 

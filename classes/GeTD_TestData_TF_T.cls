@@ -394,6 +394,19 @@ public class GeTD_TestData_TF_T {
         return secCred;
     }
 
+    /*******************************************************************
+    * @description Creates a sec cred for oAuth2
+    * @param - String endPoint -The endpoint to use in the custom Setting
+    * @param - String credIdentifier - unique identifier for the credenital to use
+    * @param - String resource - URL of a resource to call
+    ********************************************************************/
+    public GeWS_Security_Credential__c newoAuth2SecurityCredential(   String endPoint
+                                                                    , String credIdentifier
+                                                                    , String resource){
+        GeWS_Security_Credential__c newCred = newoAuth2SecurityCredential(endPoint, credIdentifier);
+        newCred.GeWs_Resource__c = resource;
+        return newCred;
+    }
     
 /********************************* CREATE EXCEPTION LOGGING CUSTOM SETTING RECORD *********************************/
 

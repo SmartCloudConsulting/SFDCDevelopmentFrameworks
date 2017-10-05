@@ -14,15 +14,18 @@ VERSION      AUTHOR                DATE             DETAIL             Descripti
 ***********************************************************************/  
 public abstract class GeEF_ExceptionHandler_A implements GeEF_Exception_I{
 
+    //Variable used if we wish to queue up exceptions before processing
+    public static Boolean isInBatchMode = FALSE;
     //Captures if the EH has already processed an Exception
-    private static Boolean exceptionAlreadyProcessed = false;
+    private static Boolean exceptionAlreadyProcessed = FALSE;
+
     //list of Exception objects used in batch processing
-    private static List<GeEL_Exception__c> batchExceptionObjects = new List<GeEL_Exception__c>();
+    private static List<GeEL_Exception__c> allExceptionObjects = new List<GeEL_Exception__c>();
     private static String sessionId;
     @testvisible
     protected GeEL_Exception__c instanceOfException;
 
-
+    //Abstract method overwriden in each EH to determine how records are processed
     protected abstract void processExceptions();
 
     /*******************************************************************
@@ -105,11 +108,8 @@ public abstract class GeEF_ExceptionHandler_A implements GeEF_Exception_I{
     }
 
     /*******************************************************************
-    * @description Creates the exception follwoing a defined process
-    *              Depending on the Salesforce context a different method
-    *              is required. For example no insert are allowed in a VF Constructor
-    *              The below method attempts the insert using a heirarchy of 
-    *              the most likely to least likey methods to work.
+    * @description Adds the exception to a list of exceptions and if 
+    *              appropriate calls the method to create the exception
     * @param  Boolean overrideExceptionProcessed - Ignore the fact an existing 
     *          Exception has already been logged and might be the route cause for 
     *          this follow up exception 
@@ -117,41 +117,58 @@ public abstract class GeEF_ExceptionHandler_A implements GeEF_Exception_I{
     * @Throws [Exceptions]: None                                                 
     ********************************************************************/
     protected void createExceptionRecord( Boolean overrideExceptionProcessed) {
-        Boolean reachQueableLimit = false;
+
+        //if not in batch
+        if(!System.isBatch() && shouldCreateExceptionRecord(overrideExceptionProcessed)){
+            //Add the excetion to the list of exceptions
+            allExceptionObjects.add(instanceOfException);
+            //If not in a batch mode then attempt to create the exception
+            if(!isInBatchMode){
+                createExceptionRecord();
+            }
+        }
+        // Set static variable to prevent multiple exception emails/objects from being sent/created to true  
+        exceptionAlreadyProcessed = TRUE;
+    }
+
+    /*******************************************************************
+    * @description Creates the exception following a defined process
+    *              Depending on the Salesforce context a different method
+    *              is required. For example no insert are allowed in a VF Constructor
+    *              The below method attempts the insert using a heirarchy of 
+    *              the most likely to least likey methods to work.
+    * @return VOID
+    * @Throws [Exceptions]: None                                                 
+    ********************************************************************/
+    public static void createExceptionRecord(){
+        Boolean reachQueableLimit = FALSE;
+        Boolean exceptionCreated = FALSE;
 
         //Checks if we have maxed out the queueable jobs and switches logic
         if(Limits.getLimitQueueableJobs() == Limits.getQueueableJobs()){
             reachQueableLimit = TRUE;
         }
 
-        //use future jobs if we are at out limit
-        if(reachQueableLimit && shouldCreateExceptionRecord(overrideExceptionProcessed)){
-            executeExceptionFuture(JSON.serialize(instanceOfException));
-        }
-
-        //if in batch
-        if(System.isBatch() && shouldCreateExceptionRecord(overrideExceptionProcessed)){
-            batchExceptionObjects.add(instanceOfException);
-        }
-
-        //if not in batch
-        if(!reachQueableLimit && !System.isBatch() && shouldCreateExceptionRecord(overrideExceptionProcessed)){
-            Boolean exceptionCreated = FALSE;
+        if(!reachQueableLimit){
             //First attempt to queue a future job to create the exception using a REST Call
-            exceptionCreated = attemptToQueueJobToCreateException();
-            
-            //if failed attempt to do an API Call
-            if(!exceptionCreated){
-                exceptionCreated = creatExceptionWithRESTCall(instanceOfException);
-            }
-
-            //If the other methods have failed attempt to create the exception using the DAO
-            if(!exceptionCreated){
-                exceptionCreated = insertRecord(instanceOfException);
-            }
+            exceptionCreated = attemptToQueueJobToCreateException();           
         }
-        // Set static variable to prevent multiple exception emails/objects from being sent/created to true  
-        exceptionAlreadyProcessed = true;
+
+        //if failed attempt to do an API Call
+        if(!exceptionCreated){
+            exceptionCreated = createExceptionsWithRESTCall(allExceptionObjects);
+        }
+        //if failed attempt to do an Future Method
+        if(!exceptionCreated){
+            executeExceptionFuture(JSON.serialize(allExceptionObjects));
+        }
+
+        //If the other methods have failed attempt to create the exception using the DAO
+        if(!exceptionCreated){
+            exceptionCreated = insertRecords(allExceptionObjects);
+        }
+        //clear the list of exceptions
+        allExceptionObjects = new List<GeEL_Exception__c>();
     }
 
     /*******************************************************************
@@ -186,11 +203,30 @@ public abstract class GeEF_ExceptionHandler_A implements GeEF_Exception_I{
     * @return VOID
     * @Throws [Exceptions]: None                                                 
     ********************************************************************/
-    private static Boolean creatExceptionWithRESTCall(GeEL_Exception__c instanceOfException){
+    private static Boolean createExceptionsWithRESTCall(List<GeEL_Exception__c> instanceOfExceptions){
         try{
+            //create an instance of a WS
             GeEF_SalesforceRESTServices_WS sfdcWebServ = new GeEF_SalesforceRESTServices_WS();
-            sfdcWebServ.createRecord(instanceOfException);
-            return TRUE;
+            Boolean hasCreateRecords = FALSE;
+
+            //Only 200 hundred records per call
+            List<GeEL_Exception__c> exceptionsForWS = new List<GeEL_Exception__c>();
+            //Loop through the records inserting 199 at a time
+            for(GeEL_Exception__c aRecord : instanceOfExceptions){
+                exceptionsForWS.add(aRecord);
+                //If there are more then 198, do ws Call and refresh list
+                if(exceptionsForWS.size() > 198){
+                    hasCreateRecords = sfdcWebServ.createRecords(instanceOfExceptions);
+                    exceptionsForWS = new List<GeEL_Exception__c>();
+                }
+            }
+
+            //If there are any not yet inserted, then call WS
+            if(exceptionsForWS.size() != 0){
+                hasCreateRecords = sfdcWebServ.createRecords(instanceOfExceptions);
+            }
+            
+            return hasCreateRecords; 
         } catch (Exception e){
             return FALSE;
         }
@@ -201,9 +237,9 @@ public abstract class GeEF_ExceptionHandler_A implements GeEF_Exception_I{
     * @return VOID
     * @Throws [Exceptions]: None                                                 
     ********************************************************************/
-    private static Boolean insertRecord(GeEL_Exception__c exceptionToInsert){
+    private static Boolean insertRecords(List<GeEL_Exception__c> exceptionsToInsert){
         try {
-            insert exceptionToInsert;
+            insert exceptionsToInsert;
             return TRUE;
         } catch (Exception e) {
             /*
@@ -219,10 +255,10 @@ public abstract class GeEF_ExceptionHandler_A implements GeEF_Exception_I{
     * @return Boolean - TRUE if the job was queued
     * @Throws [Exceptions]: None                                                 
     ********************************************************************/
-    private Boolean attemptToQueueJobToCreateException(){
+    private static Boolean attemptToQueueJobToCreateException(){
         try {
             if (!Test.isRunningTest()) {
-                System.enqueueJob(new ExecuteExceptionCalloutLogic_Q(instanceOfException 
+                System.enqueueJob(new ExecuteExceptionCalloutLogic_Q(allExceptionObjects 
                                                                     , sessionId));
                 return TRUE;
             } else {
@@ -242,9 +278,9 @@ public abstract class GeEF_ExceptionHandler_A implements GeEF_Exception_I{
        Returns: Void
        Throws [Exceptions]: N/A                                                
     ********************************************************************/  
-    private static void executeCalloutLogicAsync( GeEL_Exception__c exceptionObject
+    private static void executeCalloutLogicAsync( List<GeEL_Exception__c> exceptionObjects
                                                 , String sessionId) {
-        createAsyncException(exceptionObject);
+        createAsyncException(exceptionObjects);
     }
 
 
@@ -256,11 +292,10 @@ public abstract class GeEF_ExceptionHandler_A implements GeEF_Exception_I{
     ********************************************************************/
     @future (callout=true)
     public static void executeExceptionFuture(String exceptionRecord) {
-        GeEL_Exception__c exceptionObject 
-                            = (GeEL_Exception__c) JSON.deserializeStrict(exceptionRecord, GeEL_Exception__c.class);
+        List<GeEL_Exception__c> exceptionObject 
+                            = (List<GeEL_Exception__c>) JSON.deserializeStrict(exceptionRecord, List<GeEL_Exception__c>.class);
         createAsyncException(exceptionObject);
     }
-
 
     /*******************************************************************
     * @description Creates the exception in a-SyncContext
@@ -268,14 +303,14 @@ public abstract class GeEF_ExceptionHandler_A implements GeEF_Exception_I{
     * @return VOID
     * @Throws [Exceptions]: None                                                 
     ********************************************************************/
-    private static void createAsyncException(GeEL_Exception__c exceptionObj){
+    private static void createAsyncException(List<GeEL_Exception__c> exceptionObjs){
         Boolean exceptionCreated = FALSE;
         //First attempt to create using a REST Call
-        exceptionCreated = creatExceptionWithRESTCall(exceptionObj);
+        exceptionCreated = createExceptionsWithRESTCall(exceptionObjs);
 
         //if failed attempt to create using
         if(!exceptionCreated){
-            exceptionCreated = insertRecord(exceptionObj);
+            exceptionCreated = insertRecords(exceptionObjs);
         }          
     }
 
@@ -283,14 +318,13 @@ public abstract class GeEF_ExceptionHandler_A implements GeEF_Exception_I{
         Purpose: Inner class which implements the Queueable interface to allow callout logic to be performed asynchronously                                                                                   
     ********************************************************************/
     public class ExecuteExceptionCalloutLogic_Q implements Queueable, Database.AllowsCallouts {
-        private GeEL_Exception__c exceptionObject;
+        private List<GeEL_Exception__c> exceptionObjects;
         private String givenSessionId;
-        
-        public ExecuteExceptionCalloutLogic_Q(GeEL_Exception__c exceptionObject, String sessionId) {
-            this.exceptionObject = exceptionObject;
+
+        public ExecuteExceptionCalloutLogic_Q(List<GeEL_Exception__c> exceptionObjects, String sessionId) {
+            this.exceptionObjects = exceptionObjects;
             this.givenSessionId = sessionId;
-        }
-        
+        }        
         /*******************************************************************
             Purpose: Sends exception emails                                       
             Parameters: exceptionToInsert - the exception class which contains all details of the exception
@@ -298,7 +332,7 @@ public abstract class GeEF_ExceptionHandler_A implements GeEF_Exception_I{
             Throws [Exceptions]:                                                         
         ********************************************************************/
         public void execute(QueueableContext context) {
-            GeEF_ExceptionHandler_A.executeCalloutLogicAsync(exceptionObject
+            GeEF_ExceptionHandler_A.executeCalloutLogicAsync(exceptionObjects
                                                             , sessionId);
         }
     }
